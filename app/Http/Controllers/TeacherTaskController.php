@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateSolutionRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Resources\ShowTaskResource;
 use App\Http\Resources\ShowTeacherTaskResource;
 use App\Http\Resources\TeacherTaskResource;
 use App\Models\Solution;
 use App\Models\Subject;
 use App\Models\Task;
+use http\Env\Response;
 
 
 class TeacherTaskController extends Controller
@@ -52,12 +54,12 @@ class TeacherTaskController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Task  $task
-     * @return ShowTeacherTaskResource
+     * @return ShowTaskResource
      */
     public function showTask($id)
     {
-        $taskAndSolutionRelation = Task::with('solutions')->find($id);
-        return new ShowTeacherTaskResource($taskAndSolutionRelation);
+        $taskAndSolutionRelation = Task::with('solutions')->where('id',$id)->first();
+        return new ShowTaskResource($taskAndSolutionRelation);
 
     }
 

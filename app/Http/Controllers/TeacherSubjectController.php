@@ -7,8 +7,6 @@ use App\Http\Requests\UpdateSubjectRequest;
 use App\Http\Resources\ShowTeacherSubjectResource;
 use App\Http\Resources\TeacherSubjectResource;
 use App\Models\Subject;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TeacherSubjectController extends Controller
@@ -16,22 +14,20 @@ class TeacherSubjectController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return teacherSubjectResource
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
         $subjects = Subject::all();
-        return new TeacherSubjectResource($subjects);
+        return TeacherSubjectResource::collection($subjects);
     }
 
+    /**
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function teacherHomePage(){
         $subjects = Subject::where('teacher_id',auth()->id())->get();
-        return $subjects->toJson();
-    }
-
-    public function user()
-    {
-        return User::all()->toJson();
+        return TeacherSubjectResource::collection($subjects);
     }
 
     /**
@@ -71,12 +67,12 @@ class TeacherSubjectController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Subject  $subject
-     * @return string
+     * @return TeacherSubjectResource
      */
     public function update(UpdateSubjectRequest $updateSubjectRequest, Subject $subject)
     {
         $subject->update($updateSubjectRequest->all());
-        return $subject->toJson();
+        return new TeacherSubjectResource($subject);
     }
 
     /**

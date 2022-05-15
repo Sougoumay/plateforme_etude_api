@@ -14,6 +14,15 @@ class ShowTeacherSubjectResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'content' => $this->content,
+            'code' => $this->code,
+            'credit' => $this->credit,
+            'user_students' => UserStudentResource::collection($this->userStudents),
+            'tasks' => TeacherTaskResource::collection($this->tasks)
+
+        ];
     }
 }

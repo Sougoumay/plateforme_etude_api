@@ -47,7 +47,6 @@ Route::post('/login',[SactumController::class,'login']);
 
 Route::post('/register',[SactumController::class,'register']);
 
-Route::get('/user',[TeacherSubjectController::class,'user']);
 
 
 

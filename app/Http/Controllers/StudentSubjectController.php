@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSolutionRequest;
-use App\Http\Resources\ShowStudentTaskResource;
+use App\Http\Resources\ShowTaskResource;
 use App\Http\Resources\StudentSubjectResource;
-use App\Http\Resources\TeacherSubjectResource;
 use App\Models\Solution;
 use App\Models\Subject;
 use App\Models\Task;
@@ -14,35 +13,25 @@ use Illuminate\Support\Facades\Auth;
 class StudentSubjectController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * @return TeacherSubjectResource
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function studentSubjectRegistered()
     {
         $subjects=Auth::user()->subjectStudents()->with('userTeachers')->get();
-        return new TeacherSubjectResource($subjects);
+        return StudentSubjectResource::collection($subjects);
     }
 
     /**
-     * @return StudentSubjectResource
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function showStudentSubjectNotRegistered()
     {
-        $sujets = Subject::with('userTeachers')
+        $subjects = Subject::with('userTeachers')
             ->whereDoesntHave('userStudents',function($key){
                 $key->where('student_id',auth()->id());
             })->get();
 
-        return new StudentSubjectResource($sujets);
+        return StudentSubjectResource::collection($subjects);
     }
 
     /**
@@ -85,7 +74,7 @@ class StudentSubjectController extends Controller
 
     /**
      * @param $id
-     * @return ShowStudentTaskResource
+     * @return ShowTaskResource
      */
     public function showAnswerToTask($id)
     {
@@ -93,9 +82,14 @@ class StudentSubjectController extends Controller
 //        $subject = Subject::with('userTeachers')->find($questions->subject_id);
 //        $teacher = $subject->userTeachers->nom;
 
-        return new ShowStudentTaskResource($questions);
+        return new ShowTaskResource($questions);
     }
 
+    /**
+     * @param StoreSolutionRequest $storeSolutionRequest
+     * @param $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function putAnswerToTask(StoreSolutionRequest $storeSolutionRequest, $id)
     {
         $answer = Solution::create([
